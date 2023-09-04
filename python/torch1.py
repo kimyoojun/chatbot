@@ -1,6 +1,6 @@
 import time
 
-class Torch:
+class Torch():
     def __init__(self, name):
         self.name = '최수길'
 
