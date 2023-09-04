@@ -2,7 +2,7 @@ import time
 
 class Torch:
     def __init__(self, name):
-        self.name = 'choi su gil'
+        self.name = '최수길'
 
     def print(self):
         print('this is torch class\n' +  '이름은: ' +self.name)
