@@ -21,3 +21,12 @@
 * arima_model을 arima.model로 바꿈
 * "TypeError: ARIMA.fit() got an unexpected keyword argument 'disp'" 이런 에러가 떠서 13번줄에   'disp=0을 지움
 
+* LSTM구조
+    * LSTM순저파
+        * 망각 게이트
+            * 0이면 이전정보는 버리고 1이면 보존한다
+        * 입력 게이트
+            * 현재 정보 보존량을 결정
+        * 셀
+            * 은닉 노드를 메모리 셀이라고한다
+
