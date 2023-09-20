@@ -1,8 +1,10 @@
+
 from pandas import read_csv
 from datetime import datetime
 from pandas import DataFrame
 from statsmodels.tsa.arima.model import ARIMA
 from matplotlib import pyplot
+
 
 def parser(x):
     return datetime.strptime('199'+x, '%Y-%m')
