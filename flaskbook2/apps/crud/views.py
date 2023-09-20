@@ -3,22 +3,26 @@ from apps.app import db
 from apps.crud.models import User
 from apps.crud.forms import UserForm
 from flask import Blueprint, render_template
+from flask_login import login_required
 
 crud = Blueprint("crud", __name__, template_folder="templates", static_folder="static")
 
 
 @crud.route("/")
+@login_required
 def index():
     return render_template("crud/index.html")
 
 
 @crud.route("/sql")
+@login_required
 def sql():
     db.session.query(User).all()
     return "콘솔 로그를 확인해 주세요."
 
 
 @crud.route("users/new", methods=["GET", "POST"])
+@login_required
 def create_user():
     form = UserForm()
     if form.validate_on_submit():
@@ -34,12 +38,14 @@ def create_user():
 
 
 @crud.route("/users")
+@login_required
 def users():
     users = User.query.all()
     return render_template("crud/index.html", users=users)
 
 
 @crud.route("/user/<user_id>", methods=["GET", "POST"])
+@login_required
 def edit_user(user_id):
     form = UserForm()
 

@@ -25,10 +25,13 @@ def create_app(config_key):
     app.register_blueprint(crud_views.crud, url_prefix="/crud")
 
     login_manager.init_app(app)
-    
+
     # auth 블루프린트
     from apps.auth import views as auth_views
 
     app.register_blueprint(auth_views.auth, url_prefix="/auth")
+
+    from apps.detector import views as dt_views
+    app.register_blueprint(dt_views.dt)
 
     return app
