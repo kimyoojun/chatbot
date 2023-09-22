@@ -187,3 +187,31 @@ for epoch in range(num_epochs):
 
             accuracy = 100 * correct / total
             print('Iteration: {}. Loss: {}. Accuracy: {}'.format(iter, loss.item(), accuracy))
+    
+
+
+def evaluate(model, val_iter):
+    corrects, total, total_loss = 0, 0, 0
+    model.eval()
+    for images, labels in val_iter:
+        if torch.cuda.is_available():
+            images = Variable(images.view(-1, seq_dim, input_dim).cuda())
+        else:
+            images = Variable(images.view(-1, seq_dim, input_dim)).to(device)
+
+        logit = model(images).to(device)
+        loss = F.cross_entropy(logit, labels, reduction="sum")
+        _, predicted = torch.max(logit.data, 1)
+        total += labels.size(0)
+        total_loss += loss.item()
+        corrects += (predicted == labels).sum()
+
+    avg_loss = total_loss / len(val_iter.dataset)
+    avg_accuracy = corrects / total
+    return avg_loss, avg_accuracy
+
+
+test_loss, test_acc = evaluate(model, test_loader)
+print("Test Loss: %5.2f | Test Accuracy: %5.2f" % (test_loss, test_acc))
+
+
