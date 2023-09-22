@@ -58,7 +58,7 @@ test_loader = DataLoader(dataset=train_dataset,
 batch_size = 100
 n_iters = 6000
 num_epochs = n_iters / (len(train_dataset) / batch_size)
-num_epochhs = int(num_epochs)
+num_epochs = int(num_epochs)
 
 
 
@@ -127,3 +127,63 @@ class LSTMModel(nn.Module):
         out = outs[-1].squeeze()
         out = self.fc(out)
         return out
+    
+
+
+input_dim = 28
+hidden_dim = 128
+layer_dim = 1
+output_dim = 10
+
+model = LSTMModel(input_dim, hidden_dim, layer_dim, output_dim)
+if torch.cuda.is_available():
+    model.cuda()
+criterion = nn.CrossEntropyLoss()
+learning_rate = 0.1
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+
+
+seq_dim = 28
+loss_list = []
+iter = 0
+for epoch in range(num_epochs):
+    for i, (images, labels) in enumerate(train_loader):
+        if torch.cuda.is_available():
+            images = Variable(images.view(-1, seq_dim, input_dim).cuda())
+            labels = Variable(labels.cuda())
+        else:
+            images = Variable(images.view(-1, seq_dim, input_dim))
+            labels = Variable(labels)
+
+        optimizer.zero_grad()
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+
+        if torch.cuda.is_available():
+            loss.cuda()
+        loss.backward()
+        optimizer.step()
+        loss_list.append(loss.item())
+        iter += 1
+
+        if iter % 500 == 0:
+            correct = 0
+            total = 0
+            for images, labels in valid_loader:
+
+                if torch.cuda.is_available():
+                    images = Variable(images.view(-1, seq_dim, input_dim).cuda())
+                else:
+                    images = Variable(images.view(-1, seq_dim, input_dim))
+                
+                outputs = model(images)
+                _, predicted = torch.max(outputs.data, 1)
+
+                total += labels.size(0)
+                if torch.cuda.is_available():
+                    correct += (predicted.cpu() == labels.cpu()).sum()
+                else:
+                    correct += (predicted == labels).sum()
+
+            accuracy = 100 * correct / total
+            print('Iteration: {}. Loss: {}. Accuracy: {}'.format(iter, loss.item(), accuracy))
