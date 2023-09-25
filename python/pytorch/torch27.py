@@ -21,11 +21,11 @@ data = pd.read_csv('pytorch/data/SBUX.csv')
 print(data.dtypes)
 
 
-data['date'] = pd.to_datetime(data['date'])
-data.set_index('date', inplace=True)
+data['Date'] = pd.to_datetime(data['Date'])
+data.set_index('Date', inplace=True)
 
 
-data['volume'] = data['volume'].astype(float)
+data['Volume'] = data['Volume'].astype(float)
 
 
 X = data.iloc[:, :-1]
@@ -98,7 +98,7 @@ hidden_size = 2
 num_layers = 1
 
 num_classes = 1
-model = LSTM(num_classes, input_size, hidden_size, num_layers, X_train_tensors_f.shape[1]))
+model = LSTM(num_classes, input_size, hidden_size, num_layers, X_train_tensors_f.shape[1])
 
 criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
@@ -110,7 +110,7 @@ for epoch in range(num_epochs):
     loss = criterion(outputs, y_train_tensors)
     loss.backward()
 
-    optimizer.stop()
+    optimizer.step()
     if epoch% 100 == 0:
         print("Epoch: %d, loss: %1.5f" % (epoch, loss.item()))
 
