@@ -73,3 +73,57 @@ class binaryClassification(nn.Module):
         x = self.dropout(x)
         x = self.layer_out(x)
         return x
+
+
+
+epochs = 1000+1
+print_epoch = 100
+LEARNING_RATE = 1e-2
+
+model = binaryClassification()
+model.to(device)
+print(model)
+BCE = nn.BCEWithLogitsLoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE)
+
+
+
+def accuracy(y_pred, y_test):
+    y_pred_tag = torch.round(torch.sigmoid(y_pred))
+    correct_results_sum = (y_pred_tag == y_test).sum().float()
+    acc = correct_results_sum/y_test.shape[0]
+    acc = torch.round(acc * 100)
+    return acc
+
+
+
+for epoch in range(epochs):
+    iteration_loss = 0.
+    iteration_accuracy = 0.
+
+    model.train()
+    for i, data in enumerate(train_loader):
+        X, y = data
+        y_pred = model(X.float())
+        loss = BCE(y_pred, y.reshape(-1,1).float())
+
+        iteration_loss += loss
+        iteration_accuracy += accuracy(y_pred,y)
+        optimizer.zero_grad()
+        loss.backward()
+    if(epoch % print_epoch == 0):
+        print('Train: epoch: {0} - loss: {1:.f}; acc: {2:.3f}'.format(epoch,
+            iteration_loss/(i+1), iteration_accuracy/(i+1)))
+    
+    iteration_loss = 0.
+    iteration_accuracy = 0.
+    model.eval()
+    for i, data in enumerate(test_loader):
+        X, y = data
+        y_pred = model(X.float())
+        loss = BCE(y_pred, y.reshape(-1,1).float())
+        iteration_loss += loss
+        iteration_accuracy += accuracy(y_pred, y)
+    if(epoch % print_epoch == 0):
+        print('Test: epoch: {0} - loss: {1:.5f}; acc: {2:.3f}'.format(epoch,
+            iteration_loss/(i+1), iteration_accuracy/(i+1)))
